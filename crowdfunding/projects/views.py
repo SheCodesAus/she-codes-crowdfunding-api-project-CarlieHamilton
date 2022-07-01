@@ -39,7 +39,7 @@ class ProjectList(APIView):
         serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data)
 
-    # POST request
+    # POST request - create a new project
     def post(self, request):
         serializer = ProjectSerializer(data=request.data)
         if serializer.is_valid():
@@ -74,12 +74,20 @@ class ProjectDetail(APIView):
 
     # PUT request (update)
     def put(self, request, pk):
-      	project = self.get_object(pk)
-      	data = request.data
-      	serializer = ProjectDetailSerializer(
-           	instance=project,
-           	data=data,
-             	partial=True
-      	)
-      	if serializer.is_valid():
-           	serializer.save()
+        project = self.get_object(pk)
+        data = request.data
+        serializer = ProjectDetailSerializer(
+            instance=project,
+            data=data,
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK
+            )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
